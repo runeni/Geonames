@@ -1,5 +1,3 @@
-using System;
-
 namespace Geonames.Models
 {
     public class ErrorViewModel
