@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Dapper;
@@ -21,9 +22,15 @@ namespace Geonames.Controllers
         }
 
         // GET
-        public IActionResult Index()
+        public IActionResult Index(string searchString)
         {
-            var geonameList= _connection.Query<Geoname>("Select Id, GeonameId, Name From Geonames").ToList();
+            var geonameList = new List<Geoname>();
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                var parameters= new { SearchString = searchString };
+                var sql = "Select * From Geonames where Name = @SearchString";
+                geonameList= _connection.Query<Geoname>(sql, parameters).ToList();
+            }
             return View(geonameList);
         }
     }
