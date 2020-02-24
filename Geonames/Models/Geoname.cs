@@ -21,5 +21,6 @@
         public int? Elevation { get; set; }
         public int? Dem { get; set; }
         public string Timezone { get; set; }
+        public Geoname Parent { get; set; }
     }
 }
