@@ -24,4 +24,4 @@ create table if not exists geonames (
 create index if not exists geonames_admin1code_idx on geonames(admin1code);
 create index if not exists geonames_geonameid_idx on geonames(geonameid);
 create index if not exists geonames_countrycode_idx on geonames(countrycode);
-create index if not exists geonames_name_idx on geonames(name);
+ZX
