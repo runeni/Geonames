@@ -22,5 +22,6 @@
         public int? Dem { get; set; }
         public string Timezone { get; set; }
         public Geoname Parent { get; set; }
+        public FeatureClassification FeatureClassification { get; set; }
     }
 }

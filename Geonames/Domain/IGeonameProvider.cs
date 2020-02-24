@@ -28,12 +28,17 @@ namespace Geonames.Domain
             {
                 var parameters = new {SearchString = searchString};
                 var commandDefinition = new CommandDefinition(
-                    "select g.*, p.* from geonames g left join geonames p on p.featurecode = 'ADM1' and p.admin1code = g.admin1code and p.countrycode = g.countrycode where g.name = @SearchString",
+                    @"select geo.*, parent.*, feature.*
+                    from geonames geo
+                      join geonames parent on parent.featurecode = 'ADM1' and parent.admin1code = geo.admin1code and parent.countrycode = geo.countrycode
+                      join featureclassifications feature on feature.classcode = geo.featureclass || '.' || geo.featurecode
+                    where geo.name = @SearchString",
                     parameters
                 );
-                geonames = await _connection.QueryAsync<Geoname, Geoname, Geoname>(commandDefinition,(geoname, parent) =>
+                geonames = await _connection.QueryAsync<Geoname, Geoname, FeatureClassification, Geoname>(commandDefinition,(geoname, parent, feature) =>
                     {
                         geoname.Parent = parent;
+                        geoname.FeatureClassification = feature;
                         return geoname;
                     });
             }
