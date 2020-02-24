@@ -1,45 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dapper;
+using Geonames.Domain;
 using Geonames.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 
 namespace Geonames.Controllers
 {
     public class GeonamesController : Controller
     {
-        private readonly IConfiguration _configuration;
-        private readonly IDbConnection _connection;
+        private readonly IGeonamesProvider _geonamesProvider;
 
-        public GeonamesController(IConfiguration configuration, IDbConnection connection)
+        public GeonamesController(IGeonamesProvider geonamesProvider)
         {
-            _configuration = configuration;
-            _connection = connection;
+            _geonamesProvider = geonamesProvider;
         }
 
         // GET
         public async Task<IActionResult> Index(string searchString)
         {
             IEnumerable<Geoname> geonames = new List<Geoname>();
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                var parameters = new {SearchString = searchString};
-                var commandDefinition = new CommandDefinition(
-                    "select g.*, p.* from geonames g left join geonames p on p.featurecode = 'ADM1' and p.admin1code = g.admin1code and p.countrycode = g.countrycode where g.name = @SearchString",
-                    parameters
-                );
-                geonames = await _connection.QueryAsync<Geoname, Geoname, Geoname>(commandDefinition,(geoname, parent) =>
-                    {
-                        geoname.Parent = parent;
-                        return geoname;
-                    },
-                    splitOn: "geonameId");
-            }
+            if (!string.IsNullOrEmpty(searchString)) geonames = await _geonamesProvider.GetGeonames(searchString);
             return View(geonames);
         }
     }

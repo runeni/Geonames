@@ -1,4 +1,5 @@
 using System.Data;
+using Geonames.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ namespace Geonames
 
             // Inject IDbConnection, with implementation from NpgsqlConnection class.
             services.AddTransient<IDbConnection>((sp) => new NpgsqlConnection(dbConnectionString));
+            services.AddScoped<IGeonamesProvider, GeonamesProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
