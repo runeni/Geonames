@@ -53,7 +53,7 @@ namespace Geonames
             {
                 endpoints.MapControllerRoute(
                     "default",
-                    "{controller=Home}/{action=Index}/{id?}");
+                    "{controller=Geonames}/{action=Index}/{id?}");
             });
         }
     }
