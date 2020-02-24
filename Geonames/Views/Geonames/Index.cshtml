@@ -23,6 +23,7 @@
         <th>@Html.DisplayNameFor(model => model.FeatureClass)</th>
         <th>@Html.DisplayNameFor(model => model.FeatureCode)</th>
         <th>@Html.DisplayNameFor(model => model.Admin1Code)</th>
+        <th>Map</th>
     </tr>
     @foreach (var item in Model)
     {
@@ -37,6 +38,9 @@
             <td>@Html.DisplayFor(modelItem => item.FeatureClass)</td>
             <td>@Html.DisplayFor(modelItem => item.FeatureCode)</td>
             <td>@Html.DisplayFor(modelItem => item.Admin1Code)</td>
+            <td>
+                <a href="https://maps.google.com/maps/place/@item.Latitude,@item.Longitude" target="_blank">Open Google maps</a>
+            </td>
         </tr>
     }
 </table>
