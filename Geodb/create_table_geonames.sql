@@ -1,26 +1,44 @@
 -- drop table geonames;
-create table if not exists geonames (
-    Id              serial primary key,
-    GeonameId       integer,
-    Name            varchar(200),
-    AsciiName       varchar(200),
-    AlternateNames  varchar(10000),
-    Latitude        varchar(64),
-    Longitude       varchar(64),
-    FeatureClass    char(1),
-    FeatureCode     varchar(10),
-    CountryCode     char(2),
-    Cc2             varchar(200),
-    Admin1Code      varchar(20),
-    Admin2Code      varchar(80),
-    Admin3Code      varchar(20),
-    Admin4Code      varchar(20),
-    Population      integer,
-    Elevation       integer,
-    Dem             integer,
-    Timezone        varchar(200)
+create table geonames
+(
+    id             serial not null
+        constraint geonames_pkey
+            primary key,
+    geoname_id     integer,
+    name           varchar(200),
+    asciiname      varchar(200),
+    alternatenames varchar(10000),
+    latitude       varchar(64),
+    longitude      varchar(64),
+    featureclass   char,
+    featurecode    varchar(10),
+    countrycode    char(2),
+    cc2            varchar(200),
+    admin1code     varchar(20),
+    admin2code     varchar(80),
+    admin3code     varchar(20),
+    admin4code     varchar(20),
+    population     integer,
+    elevation      integer,
+    dem            integer,
+    timezone       varchar(200),
+    name_tsv       tsvector
 );
 
-create index if not exists geonames_admin1code_idx on geonames(admin1code);
-create index if not exists geonames_geonameid_idx on geonames(geonameid);
-create index if not exists geonames_countrycode_idx on geonames(countrycode);
+alter table geonames
+    owner to geo;
+
+create index geonames_admin1code_idx
+    on geonames (admin1code);
+
+create index geonames_geonameid_idx
+    on geonames (geoname_id);
+
+create index geonames_countrycode_idx
+    on geonames (countrycode);
+
+create index geonames_name_idx
+    on geonames (name);
+
+create index geonames_name_tsv_idx
+    on geonames (name_tsv);
