@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Geonames.Domain;
 using Geonames.Models;
@@ -20,6 +21,7 @@ namespace Geonames.Controllers
         {
             IEnumerable<Geoname> geonames = new List<Geoname>();
             if (!string.IsNullOrEmpty(searchString)) geonames = await _geonamesProvider.GetGeonames(searchString);
+            ViewData["Query"] = $"Søk på '{searchString}' returnerte {geonames.Count()} treff.";
             return View(geonames);
         }
     }
