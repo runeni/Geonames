@@ -26,19 +26,21 @@ namespace Geonames.Domain
             IEnumerable<Geoname> geonames = new List<Geoname>();
             if (!String.IsNullOrEmpty(searchString))
             {
-                var parameters = new {SearchString = searchString};
+                var parameters = new {SearchString = $"%{searchString}%"};
                 var commandDefinition = new CommandDefinition(
-                    @"select geo.*, parent.*, feature.*
+                    @"select geo.*, feature.*, co.*, admin.*
                     from geonames geo
-                      join geonames parent on parent.featurecode = 'ADM1' and parent.admin1code = geo.admin1code and parent.countrycode = geo.countrycode
                       join featureclassifications feature on feature.classcode = geo.featureclass || '.' || geo.featurecode
-                    where geo.name = @SearchString",
+                      join countries co on co.iso = geo.countrycode
+                      join admin1codesascii admin on admin.identifier = geo.countrycode || '.' || geo.admin1code
+                    where geo.name like @SearchString",
                     parameters
                 );
-                geonames = await _connection.QueryAsync<Geoname, Geoname, FeatureClassification, Geoname>(commandDefinition,(geoname, parent, feature) =>
+                geonames = await _connection.QueryAsync<Geoname, FeatureClassification, Country, Admin1CodesAscii, Geoname>(commandDefinition,(geoname, feature, country, admincode) =>
                     {
-                        geoname.Parent = parent;
                         geoname.FeatureClassification = feature;
+                        geoname.Country = country;
+                        geoname.Admin1CodesAscii = admincode;
                         return geoname;
                     });
             }
