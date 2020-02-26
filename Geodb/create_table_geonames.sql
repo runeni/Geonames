@@ -1,8 +1,8 @@
 -- drop table geonames;
 create table geonames
 (
-    id             serial not null
-        constraint geonames_pkey
+    id             bigserial not null
+        constraint geonames2_pkey
             primary key,
     geoname_id     integer,
     name           varchar(200),
@@ -18,10 +18,11 @@ create table geonames
     admin2code     varchar(80),
     admin3code     varchar(20),
     admin4code     varchar(20),
-    population     integer,
+    population     bigint,
     elevation      integer,
     dem            integer,
     timezone       varchar(200),
+    last_updated   varchar(255),
     name_tsv       tsvector
 );
 
