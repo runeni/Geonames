@@ -34,7 +34,7 @@ namespace Geonames.Domain
                       join featureclassifications feature on feature.classcode = geo.featureclass || '.' || geo.featurecode
                       join countries co on co.iso = geo.countrycode
                       join admin1codesascii admin on admin.identifier = geo.countrycode || '.' || geo.admin1code
-                      left join admin2codes admin2 on admin2.identifier = geo.countrycode || '.' || geo.admin1code || '.' || geo.admin2code
+                      left join admin2codes admin2 on admin2.identifier = geo.countrycode || '.' || geo.admin1code || '.' || geo.admin2code and geo.countrycode = 'NO'
                     where geo.name_tsv @@ to_tsquery(@SearchString)",
                     parameters
                 );
