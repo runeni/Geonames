@@ -46,7 +46,7 @@ namespace Geonames.Domain
                         geoname.Admin1CodesAscii = admincode;
                         geoname.Admin2Codes = admin2code;
                         return geoname;
-                    });
+                    }, "Id");
             }
 
             return geonames;
