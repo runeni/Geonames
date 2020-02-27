@@ -52,7 +52,7 @@ namespace Geonames.Domain
             return geonames;
         }
 
-        private string GetTsQueryFormatted(string searchString)
+        public static string GetTsQueryFormatted(string searchString)
         {
             var list = searchString.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).Select(x => x + ":*");
             var str = string.Join(" <-> ", list);
