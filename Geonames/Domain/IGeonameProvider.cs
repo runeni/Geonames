@@ -28,19 +28,22 @@ namespace Geonames.Domain
             {
                 var parameters = new {SearchString = $"{searchString}:*"};
                 var commandDefinition = new CommandDefinition(
-                    @"select geo.*, feature.*, co.*, admin.*
+                    @"select geo.*, feature.*, co.*, admin.*, admin2.*
                     from geonames geo
                       join featureclassifications feature on feature.classcode = geo.featureclass || '.' || geo.featurecode
                       join countries co on co.iso = geo.countrycode
                       join admin1codesascii admin on admin.identifier = geo.countrycode || '.' || geo.admin1code
+                      left join admin2codes admin2 on admin2.identifier = geo.countrycode || '.' || geo.admin1code || '.' || geo.admin2code
                     where geo.name_tsv @@ to_tsquery('simple', @SearchString)",
                     parameters
                 );
-                geonames = await _connection.QueryAsync<Geoname, FeatureClassification, Country, Admin1CodesAscii, Geoname>(commandDefinition,(geoname, feature, country, admincode) =>
+                geonames =
+                    await _connection.QueryAsync<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname>(commandDefinition,(geoname, feature, country, admincode, admin2code) =>
                     {
                         geoname.FeatureClassification = feature;
                         geoname.Country = country;
                         geoname.Admin1CodesAscii = admincode;
+                        geoname.Admin2Codes = admin2code;
                         return geoname;
                     });
             }

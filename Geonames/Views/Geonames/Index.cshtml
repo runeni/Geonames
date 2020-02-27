@@ -4,45 +4,44 @@
 
 @model IEnumerable<Geonames.Models.Geoname>;
 
-<h2>Index</h2>
+<div class="container">
+    <form asp-controller="Geonames" asp-action="Index" method="get">
+        <div class="row pb-5">
+            <div class="col">
+                <input type="text" name="SearchString">
+                <input type="submit" value="Søk"/>
+            </div>
+            <div class="col text-right">@ViewData["Query"]&nbsp;</div>
+        </div>
+    </form>
 
-
-<form asp-controller="Geonames" asp-action="Index" method="get">
-    <p>
-        Title: <input type="text" name="SearchString">
-        <input type="submit" value="Filter"/>
-    </p>
-</form>
-<div>
-    @ViewData["Query"]
-</div>
-
-<table class="table">
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.GeonameId)</th>
-        <th>@Html.DisplayNameFor(model => model.Name)</th>
-        <th>@Html.DisplayNameFor(model => model.FeatureClassification)</th>
-        <th>@Html.DisplayNameFor(model => model.Timezone)</th>
-        <th>Yr</th>
-        <th>Kart</th>
-    </tr>
-    @foreach (var item in Model)
-    {
+    <table class="table table-striped">
         <tr>
-            <td>@Html.DisplayFor(modelItem => item.GeonameId)</td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name),
-                @Html.DisplayFor(modelItem => item.Admin1CodesAscii.Name)
-                (@Html.DisplayFor(modelItem => item.Country.Name))
-            </td>
-            <td>@Html.DisplayFor(modelItem => item.FeatureClassification.Content)</td>
-            <td>@Html.DisplayFor(modelItem => item.Timezone)</td>
-            <td>
-                <a href="https://www.yr.no/sted/@item.Country.Name/@item.Admin1CodesAscii.Name/@item.Name" target="_blank">Gå til Yr.no</a>
-            </td>
-            <td>
-                <a href="https://maps.google.com/maps/place/@item.Latitude,@item.Longitude" target="_blank">Gå til Googlemaps</a>
-            </td>
+            <th scope="col">@Html.DisplayNameFor(model => model.GeonameId)</th>
+            <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
+            <th scope="col">@Html.DisplayNameFor(model => model.FeatureClassification)</th>
+            <th scope="col">@Html.DisplayNameFor(model => model.Timezone)</th>
+            <th scope="col">Yr</th>
+            <th scope="col">Kart</th>
         </tr>
-    }
-</table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.GeonameId)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name),
+                    @Html.DisplayFor(modelItem => item.Admin1CodesAscii.Name)
+                    (@Html.DisplayFor(modelItem => item.Country.Name))
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.FeatureClassification.Content)</td>
+                <td>@Html.DisplayFor(modelItem => item.Timezone)</td>
+                <td>
+                    <a href="https://www.yr.no/sted/@item.GetYrPath()" target="_blank">Gå til Yr.no</a>
+                </td>
+                <td>
+                    <a href="https://maps.google.com/maps/place/@item.Latitude,@item.Longitude" target="_blank">Gå til Googlemaps</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>

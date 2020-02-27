@@ -20,8 +20,11 @@ namespace Geonames.Controllers
         public async Task<IActionResult> Index(string searchString)
         {
             IEnumerable<Geoname> geonames = new List<Geoname>();
-            if (!string.IsNullOrEmpty(searchString)) geonames = await _geonamesProvider.GetGeonames(searchString);
-            ViewData["Query"] = $"Søk på '{searchString}' returnerte {geonames.Count()} treff.";
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                geonames = await _geonamesProvider.GetGeonames(searchString);
+                ViewData["Query"] = $"Søk på '{searchString}' returnerte {geonames.Count()} treff.";
+            }
             return View(geonames);
         }
     }
