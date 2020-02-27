@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Geonames.Models;
@@ -26,7 +27,7 @@ namespace Geonames.Domain
             IEnumerable<Geoname> geonames = new List<Geoname>();
             if (!String.IsNullOrEmpty(searchString))
             {
-                var parameters = new {SearchString = $"{searchString}:*"};
+                var parameters = new {SearchString = GetTsQueryFormatted(searchString)};
                 var commandDefinition = new CommandDefinition(
                     @"select geo.*, feature.*, co.*, admin.*, admin2.*
                     from geonames geo
@@ -34,7 +35,7 @@ namespace Geonames.Domain
                       join countries co on co.iso = geo.countrycode
                       join admin1codesascii admin on admin.identifier = geo.countrycode || '.' || geo.admin1code
                       left join admin2codes admin2 on admin2.identifier = geo.countrycode || '.' || geo.admin1code || '.' || geo.admin2code
-                    where geo.name_tsv @@ to_tsquery('simple', @SearchString)",
+                    where geo.name_tsv @@ to_tsquery(@SearchString)",
                     parameters
                 );
                 geonames =
@@ -49,6 +50,13 @@ namespace Geonames.Domain
             }
 
             return geonames;
+        }
+
+        private string GetTsQueryFormatted(string searchString)
+        {
+            var list = searchString.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).Select(x => x + ":*");
+            var str = string.Join(" <-> ", list);
+            return str;
         }
     }
 }
