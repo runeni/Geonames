@@ -50,10 +50,14 @@ namespace Geonames.Tests
             dbConnectionMock
                 .Verify(d =>
                     d.QueryAsync<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname>(
-                        It.Is<CommandDefinition>(command => command.CommandText.StartsWith("select geo.*")),
+                        It.Is<CommandDefinition>(command =>
+                            command.CommandText.StartsWith("select geo.*") &&
+                            command.Parameters.ToString().Equals("{ SearchString = my:* <-> location:* }")
+                        ),
                         It.IsAny<Func<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname
                         >>(),
                         It.Is<string>(s => s.Contains("Id"))));
+            actual.Should().Equal(expected);
         }
 
 
