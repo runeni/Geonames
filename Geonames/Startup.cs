@@ -27,6 +27,7 @@ namespace Geonames
 
             // Inject IDbConnection, with implementation from NpgsqlConnection class.
             services.AddTransient<IDbConnection>((sp) => new NpgsqlConnection(dbConnectionString));
+            services.AddTransient<IDatabaseWrapper, DatabaseWrapper>();
             services.AddScoped<IGeonamesProvider, GeonamesProvider>();
         }
 

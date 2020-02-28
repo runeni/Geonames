@@ -6,9 +6,11 @@ using Dapper;
 using Geonames.Domain;
 using Xunit;
 using FluentAssertions;
+using FluentAssertions.Common;
 using Geonames.Models;
 using Moq;
 using Moq.Dapper;
+using Npgsql;
 
 namespace Geonames.Tests
 {
@@ -25,25 +27,37 @@ namespace Geonames.Tests
         [Fact]
         public async Task TestGetGeonames()
         {
-            var dbConnectionMock = new Mock<IDbConnection>();
+            var expected = new List<Geoname>()
+            {
+                new Geoname()
+                {
+                    Id = 0,
+                    GeonameId = 1,
+                    Name = "My fav place"
+                }
+            };
+            var dbConnectionMock = new Mock<IDatabaseWrapper>();
             dbConnectionMock
-                .SetupDapperAsync(g => g.QueryAsync(It.IsAny<CommandDefinition>(),
+                .Setup(g => g.QueryAsync(It.IsAny<CommandDefinition>(),
                     It.IsAny<Func<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname>>(),
                     It.IsAny<string>()
                 ))
-                .ReturnsAsync(new List<Geoname>());
+                .ReturnsAsync(expected);
+
             var geonamesProvider = GetObject(dbConnectionMock.Object);
-            
+
             var actual = await geonamesProvider.GetGeonames("my location");
-                dbConnectionMock
-                    .Verify(d => d.QueryAsync<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname>(
-                        It.Is<CommandDefinition>(command => command.CommandText.StartsWith("select")),
-                        It.IsAny<Func<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname>>(),
+            dbConnectionMock
+                .Verify(d =>
+                    d.QueryAsync<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname>(
+                        It.Is<CommandDefinition>(command => command.CommandText.StartsWith("select geo.*")),
+                        It.IsAny<Func<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname
+                        >>(),
                         It.Is<string>(s => s.Contains("Id"))));
         }
 
 
-        private static GeonamesProvider GetObject(IDbConnection connection)
+        private static GeonamesProvider GetObject(IDatabaseWrapper connection)
         {
             return new GeonamesProvider(connection);
         }

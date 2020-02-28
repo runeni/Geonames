@@ -15,9 +15,9 @@ namespace Geonames.Domain
 
     public class GeonamesProvider : IGeonamesProvider
     {
-        private readonly IDbConnection _connection;
+        private readonly IDatabaseWrapper _connection;
 
-        public GeonamesProvider(IDbConnection connection)
+        public GeonamesProvider(IDatabaseWrapper connection)
         {
             _connection = connection;
         }
@@ -46,7 +46,7 @@ namespace Geonames.Domain
                         geoname.Admin1CodesAscii = admincode;
                         geoname.Admin2Codes = admin2code;
                         return geoname;
-                    }, "Id");
+                    });
             }
 
             return geonames;
