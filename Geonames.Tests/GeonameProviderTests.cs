@@ -1,35 +1,28 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using Geonames.Domain;
-using Xunit;
 using FluentAssertions;
-using FluentAssertions.Common;
+using Geonames.Domain;
 using Geonames.Models;
 using Moq;
-using Moq.Dapper;
-using Npgsql;
+using Xunit;
 
 namespace Geonames.Tests
 {
     public class GeonameProviderTests
     {
-        [Fact]
-        public void TestGetTsQueryFormatted()
+        private static GeonamesProvider GetObject(IDatabaseWrapper connection)
         {
-            var searchString = "Uno Dos Tres";
-            var formatted = GeonamesProvider.GetTsQueryFormatted(searchString);
-            formatted.Should().Be("Uno:* <-> Dos:* <-> Tres:*");
+            return new GeonamesProvider(connection);
         }
 
         [Fact]
         public async Task TestGetGeonames()
         {
-            var expected = new List<Geoname>()
+            var expected = new List<Geoname>
             {
-                new Geoname()
+                new Geoname
                 {
                     Id = 0,
                     GeonameId = 1,
@@ -49,7 +42,7 @@ namespace Geonames.Tests
             var actual = await geonamesProvider.GetGeonames("my location");
             dbConnectionMock
                 .Verify(d =>
-                    d.QueryAsync<Geoname, FeatureClassification, Country, Admin1CodesAscii, Admin2Codes, Geoname>(
+                    d.QueryAsync(
                         It.Is<CommandDefinition>(command =>
                             command.CommandText.StartsWith("select geo.*") &&
                             command.Parameters.ToString().Equals("{ SearchString = my:* <-> location:* }")
@@ -60,10 +53,12 @@ namespace Geonames.Tests
             actual.Should().Equal(expected);
         }
 
-
-        private static GeonamesProvider GetObject(IDatabaseWrapper connection)
+        [Fact]
+        public void TestGetTsQueryFormatted()
         {
-            return new GeonamesProvider(connection);
+            var searchString = "Uno Dos Tres";
+            var formatted = GeonamesProvider.GetTsQueryFormatted(searchString);
+            formatted.Should().Be("Uno:* <-> Dos:* <-> Tres:*");
         }
     }
 }

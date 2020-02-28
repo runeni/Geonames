@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using Geonames.Models;
 
 namespace Geonames.Domain
 {
@@ -25,7 +24,9 @@ namespace Geonames.Domain
 
         public async Task<IEnumerable<TReturn>>
             QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(CommandDefinition command,
-                Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, string splitOn = "Id") =>
-            await _connection.QueryAsync(command, map, splitOn);
+                Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, string splitOn = "Id")
+        {
+            return await _connection.QueryAsync(command, map, splitOn);
+        }
     }
 }
