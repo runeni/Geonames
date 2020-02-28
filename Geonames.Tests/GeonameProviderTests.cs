@@ -53,12 +53,14 @@ namespace Geonames.Tests
             actual.Should().Equal(expected);
         }
 
-        [Fact]
-        public void TestGetTsQueryFormatted()
+        [Theory]
+        [InlineData("Uno", "Uno:*")]
+        [InlineData("Uno Dos", "Uno:* <-> Dos:*")]
+        [InlineData("Uno Dos Tres", "Uno:* <-> Dos:* <-> Tres:*")]
+        public void TestGetTsQueryFormatted(string searchString, string expected)
         {
-            var searchString = "Uno Dos Tres";
             var formatted = GeonamesProvider.GetTsQueryFormatted(searchString);
-            formatted.Should().Be("Uno:* <-> Dos:* <-> Tres:*");
+            formatted.Should().Be(expected);
         }
     }
 }

@@ -1,7 +1,19 @@
-select geo.*, feature.*, co.*, admin.*, admin2.*
-                    from geonames geo
-                      join featureclassifications feature on feature.classcode = geo.featureclass || '.' || geo.featurecode
-                      join countries co on co.iso = geo.countrycode
-                      join admin1codesascii admin on admin.identifier = geo.countrycode || '.' || geo.admin1code
-                      join admin2codes admin2 on admin2.identifier = geo.countrycode || '.' || geo.admin1.code || '.' || geo.admin2code
-                    where geo.name_tsv @@ to_tsquery('simple', @SearchString)
+:screate table admin2codes
+(
+    id         serial not null
+        constraint admin2codes_pk
+            primary key,
+    identifier varchar(32),
+    name       varchar(255),
+    name_ascii varchar(255),
+    geoname_id integer
+);
+
+alter table admin2codes
+    owner to geo;
+
+create index admin2codes_geoname_id_idx
+    on admin2codes (geoname_id);
+
+create index admin2codes_identifier_idx
+    on admin2codes (identifier);e
