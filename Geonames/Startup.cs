@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
-using FluentMigrator;
 using FluentMigrator.Runner;
 using Geonames.Migrations;
 
@@ -49,7 +48,6 @@ namespace Geonames
                 // Run the migrations
                 runner.MigrateUp();
             }
-
 
             if (env.IsDevelopment())
             {
