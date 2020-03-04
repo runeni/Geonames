@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using FluentMigrator.Runner;
+using Geonames.Migrations;
 
 namespace Geonames
 {
@@ -24,6 +26,12 @@ namespace Geonames
             services.AddControllersWithViews();
             // Read the connection string from appsettings.
             var dbConnectionString = this.Configuration.GetConnectionString("DefaultConnection");
+            services.AddFluentMigratorCore()
+                .ConfigureRunner(
+                    builder => builder
+                        .AddPostgres()
+                        .WithGlobalConnectionString(dbConnectionString)
+                        .ScanIn(typeof(AddGeonamesTable).Assembly).For.Migrations());
 
             // Inject IDbConnection, with implementation from NpgsqlConnection class.
             services.AddTransient<IDbConnection>((sp) => new NpgsqlConnection(dbConnectionString));
@@ -34,6 +42,13 @@ namespace Geonames
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var runner = serviceScope.ServiceProvider.GetService<IMigrationRunner>();
+                // Run the migrations
+                runner.MigrateUp();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
