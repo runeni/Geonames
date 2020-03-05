@@ -2,7 +2,7 @@
 
 namespace Geonames.Migrations
 {
-    [Migration(20200403144000)]
+    [Migration(20200304144000)]
     public class AddTriggerToUpdateTsVectors : Migration
     {
         public override void Up()
