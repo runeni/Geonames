@@ -3,14 +3,14 @@
 namespace Geonames.Migrations
 {
     [Migration(20200403144000)]
-    public class _AddTriggerToUpdateTsVectors : Migration
+    public class AddTriggerToUpdateTsVectors : Migration
     {
         public override void Up()
         {
             Execute.Sql(@"CREATE OR REPLACE FUNCTION update_name_tsv_column()
             RETURNS TRIGGER AS $$
             BEGIN
-              NEW.name_tsv = to_tsvector(name);
+              NEW.name_tsv = to_tsvector(NEW.name);
               RETURN NEW;
             END;
             $$ language 'plpgsql';");
@@ -24,6 +24,5 @@ namespace Geonames.Migrations
             Execute.Sql("DROP TRIGGER update_geonames_name_tsv on geonames");
             Execute.Sql("DROP FUNCTION update_name_tsv_column");
         }
-        
     }
 }

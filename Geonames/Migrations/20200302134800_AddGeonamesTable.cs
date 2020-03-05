@@ -4,7 +4,7 @@ using Geonames.Extensions;
 namespace Geonames.Migrations
 {
     [Migration(20200302134800)]
-    public class AddGeonamesTable : Migration
+    public class AddGeonamesTable : BaseMigration
     {
         public override void Up()
         {
@@ -35,7 +35,11 @@ namespace Geonames.Migrations
 
         public override void Down()
         {
-            Delete.Table("geonames");
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var cmd = "DROP TABLE geonames;";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+            });
         }
     }
 }

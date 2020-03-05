@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Xml.Serialization;
+﻿using System.IO;
 using Dapper;
 using FluentMigrator;
-using Npgsql;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace Geonames.Migrations
 {
     [Migration(20200303120500)]
-    public class InsertGeonamesData : Migration
+    public class InsertGeonamesData : BaseMigration
     {
+        private readonly IConfiguration _configuration;
+
+        public InsertGeonamesData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public override void Up()
         {
             Execute.WithConnection((conn, tran) =>
             {
+                var cmd = new NpgsqlCommand();
                 using (var pgconn = new NpgsqlConnection(conn.ConnectionString))
                 {
                     pgconn.Open();
@@ -31,19 +30,13 @@ namespace Geonames.Migrations
                                     from stdin CSV DELIMITER E'\t' QUOTE E'\b' ESCAPE '\' NULL AS '' encoding 'UTF8'";
                     using (var writer = pgconn.BeginTextImport(command))
                     {
-                        var blacklist = Enumerable.Range(573484, 577069).ToList();
                         string line;
-                        int counter = 0;
-                        var file = new StreamReader("Migrations/allCountries.txt");
+                        var file = new StreamReader(_configuration.GetValue<string>("PathToAllCountriesFile"));
                         while ((line = file.ReadLine()) != null)
                         {
                             writer.Write(line);
                             writer.Write("\n");
-
-                            counter += 1;
                         }
-
-                        Console.WriteLine(String.Format("Ending in {0}", counter));
                     }
                 }
             });
@@ -51,8 +44,11 @@ namespace Geonames.Migrations
 
         public override void Down()
         {
-            Execute.Sql("truncate table geonames;");
+            // Use this approach to get around timeout issues.
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, "TRUNCATE TABLE geonames;");
+            });
         }
-
     }
 }

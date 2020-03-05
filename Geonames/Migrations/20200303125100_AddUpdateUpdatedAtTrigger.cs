@@ -1,9 +1,11 @@
-﻿using FluentMigrator;
+﻿using Dapper;
+using FluentMigrator;
+using Npgsql;
 
 namespace Geonames.Migrations
 {
     [Migration(20200303125100)]
-    public class AddUpdateUpdatedAtTrigger : Migration
+    public class AddUpdateUpdatedAtTrigger : BaseMigration
     {
         public override void Up()
         {
@@ -21,8 +23,17 @@ namespace Geonames.Migrations
 
         public override void Down()
         {
-            Execute.Sql("DROP TRIGGER update_geonames_updated_at on geonames");
-            Execute.Sql("DROP FUNCTION update_updated_at_column");
+            // Use this approach to get around timeout issues.
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var command = "DROP TRIGGER update_geonames_updated_at on geonames";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, command);
+            });
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var command = "DROP FUNCTION update_updated_at_column";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, command);
+            });
         }
     }
 }

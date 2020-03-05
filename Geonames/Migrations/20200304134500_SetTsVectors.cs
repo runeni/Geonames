@@ -1,14 +1,18 @@
-﻿using System;
+﻿using Dapper;
 using FluentMigrator;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Npgsql;
 
 namespace Geonames.Migrations
 {
     [Migration(20200304134500)]
-    public class SetTsVectors : Migration
+    public class SetTsVectors : BaseMigration
     {
         public override void Up()
         {
-            Execute.Sql(@"CREATE OR REPLACE FUNCTION batch_update_name_tsv()
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var cmd = @"CREATE OR REPLACE FUNCTION batch_update_name_tsv()
                           RETURNS void AS
                         $BODY$
                         DECLARE
@@ -27,14 +31,32 @@ namespace Geonames.Migrations
 
                         END
                         $BODY$
-                        LANGUAGE plpgsql;");
-            Execute.Sql("select batch_update_name_tsv()");
+                        LANGUAGE plpgsql;";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+            });
+
+            // Use this approach to get around timeout issues.
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var cmd = "select batch_update_name_tsv()";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+            });
         }
 
         public override void Down()
         {
-            Execute.Sql("UPDATE geonames SET name_tsv = null");
-            Execute.Sql("DROP FUNCTION batch_update_name_tsv()");
+            // Use this approach to get around timeout issues.
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var cmd = "UPDATE geonames SET name_tsv = null";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+            });
+
+            Execute.WithConnection(async (conn, tran) =>
+            {
+                var cmd = "DROP FUNCTION batch_update_name_tsv()";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+            });
         }
     }
 }

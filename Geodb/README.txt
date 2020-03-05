@@ -1,16 +1,21 @@
-Download gazetteer data from Geonames
--------------------------------------
-wget https://download.geonames.org/export/dump/allCountries.zip
+Download gazetteer data from Geonames to tmp/-folder
+----------------------------------------------------
+wget https://download.geonames.org/export/dump/allCountries.zip -P tmp
 
-wget 'http://api.geonames.org/countryInfoCSV?lang=nb&username=yourusername'
+wget 'http://api.geonames.org/countryInfoCSV?lang=nb&username=yourusername' -P tmp
 (wget https://download.geonames.org/export/dump/countryInfo.txt)
 
-wget https://download.geonames.org/export/dump/admin1CodesASCII.txt
+wget https://download.geonames.org/export/dump/admin1CodesASCII.txt -P tmp
 
-wget https://download.geonames.org/export/dump/featureCodes_nb.txt
+wget https://download.geonames.org/export/dump/featureCodes_nb.txt -P tmp
 
 
-Unzip if needed and import as CSV to db
+Unzip if needed
+---------------
+cd tmp
+unzip allCountries.zip
+
+ and import as CSV to db
 ---------------------------------------
 Use a database tool like DataGrip.
 
