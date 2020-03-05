@@ -5,12 +5,12 @@ using Npgsql;
 
 namespace Geonames.Migrations
 {
-    [Migration(20200305143000)]
-    public class InsertCountriesData : BaseMigration
+    [Migration(20200305151500)]
+    public class InsertFeatureClassificationsData : BaseMigration
     {
         private readonly IConfiguration _configuration;
 
-        public InsertCountriesData(IConfiguration configuration)
+        public InsertFeatureClassificationsData(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -24,13 +24,12 @@ namespace Geonames.Migrations
                 {
                     pgconn.Open();
                     var command =
-                        @"copy public.countries (iso, iso3, iso_numeric, fips, name, capital, area, population, continent, tld, currency_code, currency_name, phone, postal_code_format,
-                                                 postal_code_regex, languages, geoname_id, neighbours, equivalent_fips_code)
+                        @"copy public.featureclassifications (class_code, content, lang, description)
                                     from stdin CSV DELIMITER E'\t' QUOTE E'\b' ESCAPE '\' NULL AS '' encoding 'UTF8'";
                     using (var writer = pgconn.BeginTextImport(command))
                     {
                         string line;
-                        var file = new StreamReader(_configuration.GetValue<string>("PathToCountryInfoFile"));
+                        var file = new StreamReader(_configuration.GetValue<string>("PathToFeatureCodesFile"));
                         while ((line = file.ReadLine()) != null)
                         {
                             if (line.StartsWith("#")) continue;
@@ -47,9 +46,9 @@ namespace Geonames.Migrations
             // Use this approach to get around timeout issues.
             Execute.WithConnection(async (conn, tran) =>
             {
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, "TRUNCATE TABLE countries;");
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, "TRUNCATE TABLE featureclassifications;");
             });
         }
-        
+
     }
 }
