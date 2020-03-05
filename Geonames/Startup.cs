@@ -46,6 +46,7 @@ namespace Geonames
             {
                 var runner = serviceScope.ServiceProvider.GetService<IMigrationRunner>();
                 // Run the migrations
+                runner.MigrateDown(20200304144000);
                 runner.MigrateUp();
             }
 
