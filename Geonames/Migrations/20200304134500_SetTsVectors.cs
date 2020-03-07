@@ -11,7 +11,7 @@ namespace Geonames.Migrations
     {
         public override void Up()
         {
-            Execute.WithConnection(async (conn, tran) =>
+            Execute.WithConnection( async (conn, tran) =>
             {
                 var cmd = "select batch_update_name_tsv();";
                 var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
@@ -22,10 +22,10 @@ namespace Geonames.Migrations
         public override void Down()
         {
             // Use this approach to get around timeout issues.
-            Execute.WithConnection(async (conn, tran) =>
+            Execute.WithConnection((conn, tran) =>
             {
                 var cmd = "UPDATE geonames SET name_tsv = null";
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+                var rowsAffected = ExecuteSql(conn, tran, cmd);
             });
         }
     }

@@ -3,7 +3,7 @@
 namespace Geonames.Migrations
 {
     [Migration(20200304144000)]
-    public class AddTriggerToUpdateTsVectors : Migration
+    public class AddTriggerToUpdateTsVectors : BaseMigration
     {
         public override void Up()
         {
@@ -15,8 +15,13 @@ namespace Geonames.Migrations
             END;
             $$ language 'plpgsql';");
 
-            Execute.Sql(
-                @"CREATE TRIGGER update_geonames_name_tsv BEFORE UPDATE ON geonames FOR EACH ROW EXECUTE PROCEDURE update_name_tsv_column();");
+            
+            Execute.WithConnection( async (conn, tran) =>
+            {
+                var cmd = @"CREATE TRIGGER update_geonames_name_tsv BEFORE UPDATE ON geonames
+                            FOR EACH ROW EXECUTE PROCEDURE update_name_tsv_column();";
+                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+            });
         }
 
         public override void Down()

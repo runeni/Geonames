@@ -24,15 +24,15 @@ namespace Geonames.Migrations
         public override void Down()
         {
             // Use this approach to get around timeout issues.
-            Execute.WithConnection(async (conn, tran) =>
+            Execute.WithConnection((conn, tran) =>
             {
                 var command = "DROP TRIGGER update_geonames_updated_at on geonames";
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, command);
+                var rowsAffected = ExecuteSql(conn, tran, command);
             });
-            Execute.WithConnection(async (conn, tran) =>
+            Execute.WithConnection((conn, tran) =>
             {
                 var command = "DROP FUNCTION update_updated_at_column";
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, command);
+                var rowsAffected = ExecuteSql(conn, tran, command);
             });
         }
     }

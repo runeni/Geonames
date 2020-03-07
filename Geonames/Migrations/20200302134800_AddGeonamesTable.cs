@@ -38,7 +38,7 @@ namespace Geonames.Migrations
             Execute.WithConnection(async (conn, tran) =>
             {
                 var cmd = "DROP TABLE geonames;";
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+                var rowsAffected = ExecuteSql(conn, tran, cmd);
             });
         }
     }

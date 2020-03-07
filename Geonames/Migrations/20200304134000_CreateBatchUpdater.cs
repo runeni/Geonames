@@ -29,17 +29,17 @@ namespace Geonames.Migrations
                         END
                         $BODY$
                         LANGUAGE plpgsql;";
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+                var rowsAffected = ExecuteSql(conn, tran, cmd);
             });
 
         }
 
         public override void Down()
         {
-            Execute.WithConnection(async (conn, tran) =>
+            Execute.WithConnection((conn, tran) =>
             {
                 var cmd = "DROP FUNCTION batch_update_name_tsv()";
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, cmd);
+                var rowsAffected = ExecuteSql(conn, tran, cmd);
             });
         }
         

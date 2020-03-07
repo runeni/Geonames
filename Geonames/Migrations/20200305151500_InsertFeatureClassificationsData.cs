@@ -44,9 +44,9 @@ namespace Geonames.Migrations
         public override void Down()
         {
             // Use this approach to get around timeout issues.
-            Execute.WithConnection(async (conn, tran) =>
+            Execute.WithConnection((conn, tran) =>
             {
-                var rowsAffected = await ExecuteSqlAsync(conn, tran, "TRUNCATE TABLE featureclassifications;");
+                var rowsAffected = ExecuteSql(conn, tran, "TRUNCATE TABLE featureclassifications;");
             });
         }
 

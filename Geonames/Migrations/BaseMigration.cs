@@ -18,6 +18,17 @@ namespace Geonames.Migrations
             }
             return rowsAffected;
         }
+ 
+        protected int ExecuteSql(IDbConnection connection, IDbTransaction transaction, string command)
+        {
+            int rowsAffected;
+            using (var pgconn = new NpgsqlConnection(connection.ConnectionString))
+            {
+                pgconn.Open();
+                rowsAffected = pgconn.Execute(command);
+            }
+            return rowsAffected;
+        }
     }
 }
 
